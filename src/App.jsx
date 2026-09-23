@@ -1,3 +1,5 @@
+import Auth from './Auth'
+import { supabase } from './lib/supabase'
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import {
@@ -8,6 +10,9 @@ import {
 } from "./data/questions";
 
 function App() {
+  console.log("APP IS RUNNING");
+  
+  const [user, setUser] = useState(null)
   const [loggedIn, setLoggedIn] = useState(
     localStorage.getItem("codeDetectiveLoggedIn") === "true"
   );
@@ -39,6 +44,24 @@ function App() {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
+  useEffect(() => {
+  const getUser = async () => {
+    const { data } = await supabase.auth.getUser()
+    setUser(data.user)
+  }
+
+  getUser()
+
+  const { data: listener } = supabase.auth.onAuthStateChange(
+    (_event, session) => {
+      setUser(session?.user ?? null)
+    }
+  )
+
+  return () => {
+    listener.subscription.unsubscribe()
+  }
+}, [])
   useEffect(() => {
     localStorage.setItem("codeDetectiveTheme", theme);
   }, [theme]);
@@ -147,20 +170,9 @@ function App() {
     return "option";
   }
 
-  if (!loggedIn) {
-    return (
-      <div className={`app ${theme}`}>
-        <LoginScreen
-          username={loginUsername}
-          password={loginPassword}
-          setUsername={setLoginUsername}
-          setPassword={setLoginPassword}
-          error={loginError}
-          onSubmit={handleLogin}
-        />
-      </div>
-    );
-  }
+ if (!user) {
+  return <Auth onLogin={setUser} />
+}
 
   return (
     <div className={`app ${theme}`}>
