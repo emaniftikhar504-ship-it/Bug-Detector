@@ -1,7 +1,9 @@
 # 🐞 Bug Detector
 
 A modern web-based **Bug Detector** designed to help developers identify and understand common issues in their code through a clean and user-friendly interface.
+## 🚀 Live Demo
 
+👉 [**Try Code Detective Live**](https://emaniftikhar504-ship-it.github.io/Bug-Detector/)
 ## ✨ Features
 
 * 🔍 Bug detection interface
